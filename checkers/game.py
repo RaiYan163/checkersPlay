@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 from .constants import RED, WHITE, BLUE, SQUARE_SIZE
 from .board import Board
 from collections import defaultdict
@@ -91,6 +92,9 @@ class Game:
             # Save board state to move history for threefold repetition
             self.move_history.append(self.board_to_string())
             
+            # Print the current board state after the player's move
+            self.print_board_as_array()
+            
             self.change_turn()
         else:
             return False
@@ -134,3 +138,15 @@ class Game:
                 elif piece.color == WHITE:
                     board_string += 'w' if not piece.king else 'W'
         return board_string
+
+    def print_board_as_array(self):
+        board_array = np.zeros((8, 8), dtype=int)
+        for i, row in enumerate(self.board.board):
+            for j, piece in enumerate(row):
+                if piece == 0:
+                    board_array[i, j] = 0
+                elif piece.color == RED:
+                    board_array[i, j] = -1 if not piece.king else -2
+                elif piece.color == WHITE:
+                    board_array[i, j] = 1 if not piece.king else 2
+        print(board_array)
