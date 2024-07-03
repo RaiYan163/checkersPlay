@@ -2,6 +2,7 @@ import pygame
 from .constants import BLACK, ROWS, RED, SQUARE_SIZE, COLS, WHITE
 from .piece import Piece
 from collections import defaultdict
+import numpy as np
 
 class Board:
     def __init__(self):
@@ -210,3 +211,31 @@ class Board:
         for row in board_array:
             print(row)
         print("\n")
+
+    def to_array(self):
+        board_array = []
+        for row in self.board:
+            row_array = []
+            for piece in row:
+                if piece == 0:
+                    row_array.append(0)
+                else:
+                    if piece.color == WHITE:
+                        row_array.append(2 if piece.king else 1)
+                    else:
+                        row_array.append(-2 if piece.king else -1)
+            board_array.append(row_array)
+        return np.array(board_array)
+
+    def from_array(self, array):
+        for i in range(ROWS):
+            for j in range(COLS):
+                value = array[i][j]
+                if value == 0:
+                    self.board[i][j] = 0
+                else:
+                    color = WHITE if value > 0 else RED
+                    king = abs(value) == 2
+                    self.board[i][j] = Piece(i, j, color)
+                    if king:
+                        self.board[i][j].make_king()
